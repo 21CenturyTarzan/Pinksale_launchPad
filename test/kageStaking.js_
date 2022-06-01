@@ -1,0 +1,111 @@
+const { expect } = require('chai')
+const { ethers } = require('hardhat')
+
+const ZERO_ADDRESS = ethers.utils.getAddress(
+  '0x0000000000000000000000000000000000000000',
+)
+
+describe('KageStaking=======', function () {
+  let kageStaking
+  let kageToken
+  let owner
+  let addr1
+  let addr2
+  let addr3
+  let addrs
+  let initialSupply
+
+  beforeEach('This is KageStaking contract test..', async () => {
+    [owner, addr1, addr2, addr3, ...addrs] = await ethers.getSigners();
+
+    console.log(owner.address)
+    initialSupply = ethers.utils.parseEther('100000000000')
+
+    const tokenContract = await ethers.getContractFactory('KageToken')
+    kageToken = await tokenContract.deploy()
+    await kageToken.deployed()
+
+    const kageStakingContract = await ethers.getContractFactory('KageStaking')
+    kageStaking = await kageStakingContract.deploy(
+      kageToken.address,
+      owner.address,
+      175,
+    )
+    await kageStaking.deployed()
+  });
+
+  describe('KageToken setup', async () => {
+    it("should be named 'KageToken", async () => {
+      const name = await kageToken.name()
+      expect(name).to.equal('KageToken')
+    });
+    it('should have correct supply', async () => {
+      const supply = await kageToken.totalSupply()
+      expect(supply).to.equal(initialSupply)
+    });
+    it('owner should have all the supply', async () => {
+      const ownerBalance = await kageToken.balanceOf(owner.address)
+      console.log('Tarzan: owner balance====>', ownerBalance)
+      expect(ownerBalance).to.equal(initialSupply)
+    });
+  });
+
+  describe('staking contract setup', async () => {
+    it('Test rewardRate ', async function () {
+      const rewardRate = await kageStaking.rewardRate()
+      console.log('Tarzan: staking address===>', kageStaking.address)
+      console.log('Tarzan: rewardRate=====>', rewardRate)
+      expect(rewardRate).to.equal(175)
+    });
+
+    it('will not allow a 0x00 Kage address', async function () {
+      const kageContract = await ethers.getContractFactory('KageStaking')
+      await expect(kageContract.deploy(ZERO_ADDRESS, owner.address, 175)).to.be.reverted
+    });
+  });
+
+  // describe("Token Staking Test", async function(){
+
+  //   it("This is tazor contract test..", async () => {
+  //     kageStaking.connect(addr1).
+  //   });
+  // });
+
+  describe('owner transfer token to alice', async () =>{
+    it('transfer kage token to alice ', async function () {
+      const transferAmount = ethers.utils.parseEther("1000");
+      let aliceBalance = await kageToken.balanceOf(addr1.address);
+      expect(aliceBalance).to.equal(0);
+      console.log("tarzan: current balance alice is zero");
+      await kageToken.transfer(addr1.address, transferAmount);
+      aliceBalance = await kageToken.balanceOf(addr1.address);
+      expect(aliceBalance).to.equal(transferAmount);
+    });
+
+    it('owner transfer token to alice, alice to bob', async () =>{
+      const transferAmount = ethers.utils.parseEther("1000");
+      await kageToken.transfer(addr1.address, transferAmount);
+  
+      let bobBalance = await kageToken.balanceOf(addr2.address);
+      expect(bobBalance).to.equal(0);
+      await kageToken.connect(addr1).transfer(addr2.address, transferAmount);
+      bobBalance = await kageToken.balanceOf(addr2.address);
+      expect(bobBalance).to.equal(transferAmount);
+    });
+  });
+
+  describe('staking kage token', async () =>{
+    it('stake token', async function () {
+      const approveAmount = ethers.utils.parseEther("100000");
+      const transferAmount = ethers.utils.parseEther("1000");
+      
+      await kageToken.connect(addr1).approve(kageStaking.address, approveAmount);
+    });
+  });
+
+//   it("should fail by depositing more than current balance", async () => {
+//     const txFailure = initialSupply + 1;
+//     await expect(contract.transfer(txFailure, aliceAddress)).to.be.revertedWith("Not enough funds");
+// });
+
+})

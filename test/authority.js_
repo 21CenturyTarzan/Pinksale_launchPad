@@ -1,0 +1,40 @@
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+
+const ZERO_ADDRESS = ethers.utils.getAddress("0x0000000000000000000000000000000000000000");
+
+
+describe("Authority", function () {
+
+  let authorityAddress;  
+  it("This is Authority contract test..", async function () {
+    const [owner] = await ethers.getSigners();
+    
+    console.log(owner.address);
+
+    const authorityContract = await ethers.getContractFactory("TazorAuthority");
+    const authority = await authorityContract.deploy(owner.address, owner.address, owner.address, owner.address);
+
+    const governor = await authority.governor();
+    expect(governor).to.equal(owner.address);
+    // expect(governor).to.equal(ZERO_ADDRESS);
+    authorityAddress = authority.address;
+  });
+
+
+  describe("tazor", function(){
+
+    it("This is tazor contract test..", async () => {
+      const tazorContract = await ethers.getContractFactory("Tazor");
+      let tazor = await tazorContract.deploy(authorityAddress);
+      expect(await tazor.name()).to.equal("TAZOR");
+      expect(await tazor.symbol()).to.equal("TAZOR");
+      expect(await tazor.decimals()).to.equal(9);
+
+      const [owner, vault, bob, alice] = await ethers.getSigners();
+      let supplyBefore = await tazor.totalSupply();
+      await tazor.mint(bob.address, 100);      
+      expect(supplyBefore.add(100)).to.equal(await tazor.totalSupply());
+    });
+  });
+});

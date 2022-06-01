@@ -1,0 +1,162 @@
+const { expect } = require('chai')
+const { ethers, network } = require('hardhat')
+
+const ZERO_ADDRESS = ethers.utils.getAddress(
+  '0x0000000000000000000000000000000000000000',
+)
+
+describe('shape dao=======', function () {
+  let kageStaking
+  let kageToken
+  let xShape;
+  let owner
+  let addr1
+  let addr2
+  let addrs
+  
+  beforeEach('This is shape dao contract test..', async () => {
+    [owner, addr1, addr2, addr3, ...addrs] = await ethers.getSigners();
+    console.log(owner.address);
+
+    const tokenContract = await ethers.getContractFactory('SHAPE')
+    kageToken = await tokenContract.deploy()
+    await kageToken.deployed()
+
+    await kageToken.transfer(addr1.address, ethers.utils.parseEther("100000"));
+    await kageToken.transfer(addr2.address, ethers.utils.parseEther("100000"));
+
+    const sTokenContract = await ethers.getContractFactory('XShape');
+    xShape = await sTokenContract.deploy();
+    await xShape.deployed();
+
+    const kageStakingContract = await ethers.getContractFactory('ShapeDeposit');
+    kageStaking = await kageStakingContract.deploy(kageToken.address, xShape.address);
+    await kageStaking.deployed();
+  });
+
+  describe('shape dao setup', async () => {
+    it("should be named 'shape dao", async () => {
+      const name = await kageToken.name();
+      // expect(name).to.equal('SHAPE DAO');
+      console.log("shape token name", name);
+    });
+    it('should have correct supply', async () => {
+      const supply = await kageToken.totalSupply();
+      console.log("shape total supply", supply);
+      // expect(supply).to.equal(initialSupply)
+    });    
+  });
+
+  describe('staking contract setup', async () => {
+    it('Test rewardRate ', async function () {
+      const xShapeAddress = await kageStaking.xShapeToken();
+      console.log('xShape Address', xShapeAddress);
+    });
+
+    it('will not allow a 0x00 mkong address', async function () {
+      // const kageContract = await ethers.getContractFactory('MKongStaking')
+      // await expect(kageContract.deploy(ZERO_ADDRESS, owner.address, 175)).to.be.reverted
+    });
+  });
+
+  // describe("Token Staking Test", async function(){
+
+  //   it("This is tazor contract test..", async () => {
+  //     kageStaking.connect(addr1).
+  //   });
+  // });
+
+  // describe('owner transfer token to alice', async () =>{
+  //   it('transfer kage token to alice ', async function () {
+  //     const transferAmount = ethers.utils.parseEther("1000");
+  //     let aliceBalance = await kageToken.balanceOf(addr1.address);
+  //     expect(aliceBalance).to.equal(0);
+  //     console.log("tarzan: current balance alice is zero");
+  //     await kageToken.transfer(addr1.address, transferAmount);
+  //     aliceBalance = await kageToken.balanceOf(addr1.address);
+  //     expect(aliceBalance).to.equal(transferAmount);
+  //   });
+
+  //   it('owner transfer token to alice, alice to bob', async () =>{
+  //     const transferAmount = ethers.utils.parseEther("1000");
+  //     await kageToken.transfer(addr1.address, transferAmount);
+  
+  //     let bobBalance = await kageToken.balanceOf(addr2.address);
+  //     expect(bobBalance).to.equal(0);
+  //     await kageToken.connect(addr1).transfer(addr2.address, transferAmount);
+  //     bobBalance = await kageToken.balanceOf(addr2.address);
+  //     expect(bobBalance).to.equal(transferAmount);
+  //   });
+  // });
+
+  // describe('staking mKong token', async () =>{
+  //   it('stake token to mkong staking contract >>>', async function () {
+  //     let balance1 = await kageToken.balanceOf(addr1.address);
+  //     console.log("[tz]: balance of person1", ethers.utils.formatEther(balance1.toString()));
+
+  //     await kageToken.approve(kageStaking.address, ethers.utils.parseEther("1000000"));
+  //     await kageToken.connect(addr1).approve(kageStaking.address, ethers.utils.parseEther("1000000"));
+
+  //     await kageStaking.stakeToken(ethers.utils.parseEther("100"));
+
+  //     await kageStaking.stakeToken(ethers.utils.parseEther("500"));
+
+  //     await kageStaking.connect(addr1).stakeToken(ethers.utils.parseEther("700"));
+
+  //     // expect(balance1).to.expect();
+
+  //     let num = ethers.utils.formatEther(await kageStaking.totalStakedAmount());
+
+  //     console.log("total supply of staking", num);
+
+  //     await network.provider.send("evm_increaseTime", [18144000]);
+  //     await network.provider.send("evm_mine");
+
+  //     await kageStaking.unstakeToken(ethers.utils.parseEther("500"), false);
+
+  //     let userInfo = await kageStaking.userInfos(owner.address);
+  //     console.log("owner staked amount",  ethers.utils.formatEther(userInfo.stakedAmount));
+  //     console.log("owner pending amount",  ethers.utils.formatEther(userInfo.pendingAmount));
+  //   });
+    
+  // });
+
+  // describe('emergency withdraw test', async () =>{
+  //   it('stake token to mkong staking contract >>>', async function () {
+  //     let balance1 = await kageToken.balanceOf(addr1.address);
+  //     console.log("[tz]: balance of person1", ethers.utils.formatEther(balance1.toString()));
+
+  //     await kageToken.approve(kageStaking.address, ethers.utils.parseEther("1000000"));
+  //     await kageToken.connect(addr1).approve(kageStaking.address, ethers.utils.parseEther("1000000"));
+
+  //     await kageStaking.stakeToken(ethers.utils.parseEther("100"));
+
+  //     await kageStaking.stakeToken(ethers.utils.parseEther("500"));
+
+  //     await kageStaking.connect(addr1).stakeToken(ethers.utils.parseEther("700"));
+
+  //     // expect(balance1).to.expect();
+
+  //     let num = ethers.utils.formatEther(await kageStaking.totalStakedAmount());
+
+  //     console.log("total supply of staking", num);
+
+  //     await network.provider.send("evm_increaseTime", [18144000]);
+  //     await network.provider.send("evm_mine");
+
+  //     await kageStaking.connect(addr1).unstakeToken(ethers.utils.parseEther("500"), true);
+  //     let addr1Info = await kageStaking.userInfos(addr1.address);
+  //     console.log("addr1 staked amount",  ethers.utils.formatEther(addr1Info.stakedAmount));
+  //     let balance2 = await kageToken.balanceOf(addr1.address);
+  //     console.log("addr1 wallet amount",  ethers.utils.formatEther(balance2));
+
+  //     await kageStaking.unstakeToken(ethers.utils.parseEther("500"), false);
+
+  //     let userInfo = await kageStaking.userInfos(owner.address);
+  //     console.log("owner staked amount",  ethers.utils.formatEther(userInfo.stakedAmount));
+  //     console.log("owner pending amount",  ethers.utils.formatEther(userInfo.pendingAmount));
+  //   });
+    
+  // });
+
+})
