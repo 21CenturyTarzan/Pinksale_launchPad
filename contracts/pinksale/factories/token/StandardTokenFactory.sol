@@ -5,11 +5,14 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./TokenFactoryBase.sol";
-import "../../interfaces/IStandardERC20.sol";
+// import "../../interfaces/IStandardERC20.sol";
+import "../../tokens/StandardToken.sol";
 
 contract StandardTokenFactory is TokenFactoryBase {
   using Address for address payable;
   using SafeMath for uint256;
+  StandardToken[] public tokens;
+
   constructor(address factoryManager_, address implementation_) TokenFactoryBase(factoryManager_, implementation_) {}
 
   function create(
@@ -21,8 +24,13 @@ contract StandardTokenFactory is TokenFactoryBase {
     refundExcessiveFee();
     payable(feeTo).sendValue(flatFee);
     token = Clones.clone(implementation);
-    IStandardERC20(token).initialize(msg.sender, name, symbol, decimals, totalSupply);
+    StandardToken(token).initialize(msg.sender, name, symbol, decimals, totalSupply);
+    tokens.push(StandardToken(token));
     assignTokenToOwner(msg.sender, token, 0);
     emit TokenCreated(msg.sender, token, 0);
+  }
+
+  function getTokens() external view returns(StandardToken[] memory){
+    return tokens;
   }
 }

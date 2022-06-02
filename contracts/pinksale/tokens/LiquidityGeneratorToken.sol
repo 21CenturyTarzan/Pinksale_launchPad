@@ -970,7 +970,7 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         inSwapAndLiquify = false;
     }
 
-    constructor(
+    function initialize(
         string memory name_,
         string memory symbol_,
         uint256 totalSupply_,
@@ -978,10 +978,8 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
         address charityAddress_,
         uint16 taxFeeBps_,
         uint16 liquidityFeeBps_,
-        uint16 charityFeeBps_,
-        address serviceFeeReceiver_,
-        uint256 serviceFee_
-    ) payable {
+        uint16 charityFeeBps_
+    ) external {
         require(taxFeeBps_ >= 0, "Invalid tax fee");
         require(liquidityFeeBps_ >= 0, "Invalid liquidity fee");
         require(charityFeeBps_ >= 0, "Invalid charity fee");
@@ -1039,8 +1037,6 @@ contract LiquidityGeneratorToken is IERC20, Ownable, BaseToken {
             TokenType.liquidityGenerator,
             VERSION
         );
-
-        payable(serviceFeeReceiver_).transfer(serviceFee_);
     }
 
     function name() public view returns (string memory) {
