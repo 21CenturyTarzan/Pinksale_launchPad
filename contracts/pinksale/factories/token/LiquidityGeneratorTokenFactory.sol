@@ -2,13 +2,15 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
 import "./TokenFactoryBase.sol";
-import "../../interfaces/ILiquidityGeneratorToken.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+// import "../../interfaces/ILiquidityGeneratorToken.sol";
+import "../../tokens/LiquidityGeneratorToken.sol";
 
 
 contract LiquidityGeneratorTokenFactory is TokenFactoryBase {
   using Address for address payable;
+  LiquidityGeneratorToken[] public liquidityTokens;
 
   constructor(address factoryManager_, address implementation_) TokenFactoryBase(factoryManager_, implementation_) {}
 
@@ -20,13 +22,12 @@ contract LiquidityGeneratorTokenFactory is TokenFactoryBase {
     address charity,
     uint16 taxFeeBps, 
     uint16 liquidityFeeBps,
-    uint16 charityBps,
-    uint16 maxTxBps
+    uint16 charityBps
   ) external payable enoughFee nonReentrant returns (address token) {
     refundExcessiveFee();
     payable(feeTo).sendValue(flatFee);
     token = Clones.clone(implementation);
-    ILiquidityGeneratorToken(token).initialize(
+    LiquidityGeneratorToken( payable(token) ).initialize(
       msg.sender,
       name,
       symbol,
@@ -35,9 +36,9 @@ contract LiquidityGeneratorTokenFactory is TokenFactoryBase {
       charity,
       taxFeeBps,
       liquidityFeeBps,
-      charityBps,
-      maxTxBps
+      charityBps
     );
+    liquidityTokens.push(LiquidityGeneratorToken( payable(token) ));
     assignTokenToOwner(msg.sender, token, 1);
     emit TokenCreated(msg.sender, token, 1);
   }

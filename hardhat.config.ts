@@ -73,12 +73,12 @@ const config: HardhatUserConfig = {
     },
     hardhat: {
       forking: {
-        enabled: process.env.FORKING === "true",
-        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+        // enabled: process.env.FORKING === "true",
+        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY2}`,
       },
-      live: false,
-      saveDeployments: true,
-      tags: ["test", "local"],
+      // live: false,
+      // saveDeployments: true,
+      // tags: ["test", "local"],
     },
     ropsten: {
       url: `https://ropsten.infura.io/v3/${process.env.INFURA_API_KEY}`,

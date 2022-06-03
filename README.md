@@ -9,7 +9,6 @@
     npm run bsctest:deploy
 
 
-
 # contract deployment step.🚀🚀🚀🚀
 
 1. deploy TokenFactoryManager.sol 
@@ -28,3 +27,18 @@
 6. deploy presale contract 
 
 7. deploy presaleFactory contract.
+
+
+# smart contract testing related to router address.
+refer this url
+https://hardhat.org/hardhat-network/guides/mainnet-forking
+
+- set hardhat forking configuration with ehtereum-mainnet alchemy key
+- open a terminal and type
+    npx hardhat node
+    (then: npx hardhat test)
+- open another terminal and type
+    npx hardhat test
+
+it will compile smart contract files first then show yellow messages like below
+image.png

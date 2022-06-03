@@ -5,12 +5,17 @@ const ZERO_ADDRESS = ethers.utils.getAddress(
   '0x0000000000000000000000000000000000000000',
 )
 
+const ROUTER_ADDRESS = ethers.utils.getAddress(
+  '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+)
+
 describe('Pinksale Project=======', function () {
   let kageStaking
   let factoryManager
   let standardToken
   let liquidityToken
   let standardTokenFactory
+  let liquidityTokenFactory
   let owner
   let addr1
   let addr2
@@ -38,7 +43,11 @@ describe('Pinksale Project=======', function () {
     const standardTokenFactoryContract = await ethers.getContractFactory('StandardTokenFactory');
     standardTokenFactory = await standardTokenFactoryContract.deploy(factoryManager.address, standardToken.address);
     await standardTokenFactory.deployed()
-    
+
+    const liquidityTokenFactoryContract = await ethers.getContractFactory('LiquidityGeneratorTokenFactory')
+    liquidityTokenFactory = await liquidityTokenFactoryContract.deploy(factoryManager.address, liquidityToken.address);
+    await liquidityTokenFactory.deployed()
+
   });
 
   describe('create new token setup', async () => {
@@ -65,13 +74,14 @@ describe('Pinksale Project=======', function () {
       decimal = await newTokenContract.decimals();
       console.log("token Name: ", ethers.utils.formatEther(tokenName))
       console.log("token decimal: ", decimal)
-
     });
 
-    it('should have correct supply', async () => {
-      // const supply = await kageToken.totalSupply();
-      // expect(supply).to.equal(initialSupply)
-    });    
+    it('create new liquiditygenerator token', async () => {
+      console.log("router address : ", ROUTER_ADDRESS);
+      await factoryManager.addTokenFactory(liquidityTokenFactory.address);
+      const tokenAddress1 = await liquidityTokenFactory.create("DEMO", "DEMO", 4500000000, ROUTER_ADDRESS, owner.address, 100, 300, 100, {value: ethers.utils.parseEther('0.1'),});
+      const tokenAddress2 = await liquidityTokenFactory.create("DEMO", "DEMO", 3000000000, ROUTER_ADDRESS, owner.address, 100, 300, 100, {value: ethers.utils.parseEther('0.1'),});
+    });
   });
 
   describe('staking contract setup', async () => {
