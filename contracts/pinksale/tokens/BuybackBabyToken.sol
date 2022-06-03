@@ -3,6 +3,11 @@
 // Dependency file: @openzeppelin/contracts/utils/math/SafeMath.sol
 // SPDX-License-Identifier: MIT
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/proxy/Clones.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
 // pragma solidity ^0.8.0;
 
 // CAUTION
@@ -15,218 +20,6 @@
  * NOTE: `SafeMath` is no longer needed starting with Solidity 0.8. The compiler
  * now has built in overflow checking.
  */
-library SafeMath {
-    /**
-     * @dev Returns the addition of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            uint256 c = a + b;
-            if (c < a) return (false, 0);
-            return (true, c);
-        }
-    }
-
-    /**
-     * @dev Returns the substraction of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b > a) return (false, 0);
-            return (true, a - b);
-        }
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
-            // benefit is lost if 'b' is also tested.
-            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522
-            if (a == 0) return (true, 0);
-            uint256 c = a * b;
-            if (c / a != b) return (false, 0);
-            return (true, c);
-        }
-    }
-
-    /**
-     * @dev Returns the division of two unsigned integers, with a division by zero flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a / b);
-        }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.
-     *
-     * _Available since v3.4._
-     */
-    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {
-        unchecked {
-            if (b == 0) return (false, 0);
-            return (true, a % b);
-        }
-    }
-
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     *
-     * - Addition cannot overflow.
-     */
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a + b;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a - b;
-    }
-
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     *
-     * - Multiplication cannot overflow.
-     */
-    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a * b;
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers, reverting on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator.
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a / b;
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * reverting when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
-        return a % b;
-    }
-
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on
-     * overflow (when the result is negative).
-     *
-     * CAUTION: This function is deprecated because it requires allocating memory for the error
-     * message unnecessarily. For custom revert reasons use {trySub}.
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     *
-     * - Subtraction cannot overflow.
-     */
-    function sub(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-        unchecked {
-            require(b <= a, errorMessage);
-            return a - b;
-        }
-    }
-
-    /**
-     * @dev Returns the integer division of two unsigned integers, reverting with custom message on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function div(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-        unchecked {
-            require(b > 0, errorMessage);
-            return a / b;
-        }
-    }
-
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * reverting with custom message when dividing by zero.
-     *
-     * CAUTION: This function is deprecated because it requires allocating memory for the error
-     * message unnecessarily. For custom revert reasons use {tryMod}.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     *
-     * - The divisor cannot be zero.
-     */
-    function mod(
-        uint256 a,
-        uint256 b,
-        string memory errorMessage
-    ) internal pure returns (uint256) {
-        unchecked {
-            require(b > 0, errorMessage);
-            return a % b;
-        }
-    }
-}
 
 
 // Dependency file: @openzeppelin/contracts/proxy/Clones.sol
@@ -247,72 +40,6 @@ library SafeMath {
  *
  * _Available since v3.4._
  */
-library Clones {
-    /**
-     * @dev Deploys and returns the address of a clone that mimics the behaviour of `implementation`.
-     *
-     * This function uses the create opcode, which should never revert.
-     */
-    function clone(address implementation) internal returns (address instance) {
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
-            mstore(add(ptr, 0x14), shl(0x60, implementation))
-            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
-            instance := create(0, ptr, 0x37)
-        }
-        require(instance != address(0), "ERC1167: create failed");
-    }
-
-    /**
-     * @dev Deploys and returns the address of a clone that mimics the behaviour of `implementation`.
-     *
-     * This function uses the create2 opcode and a `salt` to deterministically deploy
-     * the clone. Using the same `implementation` and `salt` multiple time will revert, since
-     * the clones cannot be deployed twice at the same address.
-     */
-    function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) {
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
-            mstore(add(ptr, 0x14), shl(0x60, implementation))
-            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)
-            instance := create2(0, ptr, 0x37, salt)
-        }
-        require(instance != address(0), "ERC1167: create2 failed");
-    }
-
-    /**
-     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
-     */
-    function predictDeterministicAddress(
-        address implementation,
-        bytes32 salt,
-        address deployer
-    ) internal pure returns (address predicted) {
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)
-            mstore(add(ptr, 0x14), shl(0x60, implementation))
-            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf3ff00000000000000000000000000000000)
-            mstore(add(ptr, 0x38), shl(0x60, deployer))
-            mstore(add(ptr, 0x4c), salt)
-            mstore(add(ptr, 0x6c), keccak256(ptr, 0x37))
-            predicted := keccak256(add(ptr, 0x37), 0x55)
-        }
-    }
-
-    /**
-     * @dev Computes the address of a clone deployed using {Clones-cloneDeterministic}.
-     */
-    function predictDeterministicAddress(address implementation, bytes32 salt)
-        internal
-        view
-        returns (address predicted)
-    {
-        return predictDeterministicAddress(implementation, salt, address(this));
-    }
-}
 
 
 // Dependency file: contracts/interfaces/IUniswapV2Factory.sol
@@ -606,71 +333,6 @@ interface IERC20Extended {
 
 // pragma solidity =0.8.4;
 
-abstract contract Auth {
-    address internal owner;
-    mapping(address => bool) internal authorizations;
-
-    constructor(address _owner) {
-        owner = _owner;
-        authorizations[_owner] = true;
-    }
-
-    /**
-     * Function modifier to require caller to be contract owner
-     */
-    modifier onlyOwner() {
-        require(isOwner(msg.sender), "!OWNER");
-        _;
-    }
-
-    /**
-     * Function modifier to require caller to be authorized
-     */
-    modifier authorized() {
-        require(isAuthorized(msg.sender), "!AUTHORIZED");
-        _;
-    }
-
-    /**
-     * Authorize address. Owner only
-     */
-    function authorize(address adr) public onlyOwner {
-        authorizations[adr] = true;
-    }
-
-    /**
-     * Remove address' authorization. Owner only
-     */
-    function unauthorize(address adr) public onlyOwner {
-        authorizations[adr] = false;
-    }
-
-    /**
-     * Check if address is owner
-     */
-    function isOwner(address account) public view returns (bool) {
-        return account == owner;
-    }
-
-    /**
-     * Return address' authorization status
-     */
-    function isAuthorized(address adr) public view returns (bool) {
-        return authorizations[adr];
-    }
-
-    /**
-     * Transfer ownership to new address. Caller must be owner. Leaves old owner authorized
-     */
-    function transferOwnership(address payable adr) public onlyOwner {
-        owner = adr;
-        authorizations[adr] = true;
-        emit OwnershipTransferred(adr);
-    }
-
-    event OwnershipTransferred(address owner);
-}
-
 
 // Dependency file: contracts/buyback/DividendDistributor.sol
 
@@ -943,7 +605,7 @@ pragma solidity =0.8.4;
 // import "contracts/buyback/DividendDistributor.sol";
 // import "contracts/BaseToken.sol";
 
-contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
+contract BuybackBabyToken is IERC20Extended, OwnableUpgradeable, BaseToken {
     using SafeMath for uint256;
 
     uint256 public constant VERSION = 1;
@@ -1014,16 +676,16 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         _;
     }
 
-    constructor(
+    function initialize(
+        address owner_,
         string memory name_,
         string memory symbol_,
         uint256 totalSupply_,
         address rewardToken_,
         address router_,
-        uint256[5] memory feeSettings_,
-        address serviceFeeReceiver_,
-        uint256 serviceFee_
-    ) payable Auth(msg.sender) {
+        uint256[5] memory feeSettings_
+    ) external initializer {
+
         _name = name_;
         _symbol = symbol_;
         _totalSupply = totalSupply_;
@@ -1043,29 +705,31 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         swapEnabled = true;
         swapThreshold = _totalSupply / 20000; // 0.005%
 
-        isFeeExempt[msg.sender] = true;
+        isFeeExempt[owner_] = true;
         isDividendExempt[pair] = true;
         isDividendExempt[address(this)] = true;
         isDividendExempt[DEAD] = true;
         buyBacker[msg.sender] = true;
 
-        autoLiquidityReceiver = msg.sender;
-        marketingFeeReceiver = msg.sender;
+        autoLiquidityReceiver = owner_;
+        marketingFeeReceiver = owner_;
 
         _allowances[address(this)][address(router)] = _totalSupply;
         _allowances[address(this)][address(pair)] = _totalSupply;
 
-        _balances[msg.sender] = _totalSupply;
-        emit Transfer(address(0), msg.sender, _totalSupply);
+        _balances[owner_] = _totalSupply;
+
+        OwnableUpgradeable.__Ownable_init();
+        transferOwnership(owner_);
+
+        emit Transfer(address(0), owner_, _totalSupply);
 
         emit TokenCreated(
-            msg.sender,
+            owner_,
             address(this),
             TokenType.buybackBaby,
             VERSION
         );
-
-        payable(serviceFeeReceiver_).transfer(serviceFee_);
     }
 
     function _initializeFees(uint256[5] memory feeSettings_) internal {
@@ -1074,7 +738,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
             feeSettings_[1], // buybackFee
             feeSettings_[2], // reflectionFee
             feeSettings_[3], // marketingFee
-            feeSettings_[4] // feeDenominator
+            feeSettings_[4]  // feeDenominator
         );
     }
 
@@ -1331,7 +995,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
 
     function triggerZeusBuyback(uint256 amount, bool triggerBuybackMultiplier)
         external
-        authorized
+        onlyOwner
     {
         buyTokens(amount, DEAD);
         if (triggerBuybackMultiplier) {
@@ -1340,7 +1004,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         }
     }
 
-    function clearBuybackMultiplier() external authorized {
+    function clearBuybackMultiplier() external onlyOwner {
         buybackMultiplierTriggeredAt = 0;
     }
 
@@ -1368,7 +1032,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         uint256 _cap,
         uint256 _amount,
         uint256 _period
-    ) external authorized {
+    ) external onlyOwner {
         autoBuybackEnabled = _enabled;
         autoBuybackCap = _cap;
         autoBuybackAccumulator = 0;
@@ -1381,7 +1045,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         uint256 numerator,
         uint256 denominator,
         uint256 length
-    ) external authorized {
+    ) external onlyOwner {
         require(numerator / denominator <= 2 && numerator > denominator);
         buybackMultiplierNumerator = numerator;
         buybackMultiplierDenominator = denominator;
@@ -1390,7 +1054,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
 
     function setIsDividendExempt(address holder, bool exempt)
         external
-        authorized
+        onlyOwner
     {
         require(holder != address(this) && holder != pair);
         isDividendExempt[holder] = exempt;
@@ -1401,11 +1065,11 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         }
     }
 
-    function setIsFeeExempt(address holder, bool exempt) external authorized {
+    function setIsFeeExempt(address holder, bool exempt) external onlyOwner {
         isFeeExempt[holder] = exempt;
     }
 
-    function setBuyBacker(address acc, bool add) external authorized {
+    function setBuyBacker(address acc, bool add) external onlyOwner {
         buyBacker[acc] = add;
     }
 
@@ -1415,7 +1079,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
         uint256 _reflectionFee,
         uint256 _marketingFee,
         uint256 _feeDenominator
-    ) public authorized {
+    ) public onlyOwner {
         _setFees(
             _liquidityFee,
             _buybackFee,
@@ -1449,14 +1113,14 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
     function setFeeReceivers(
         address _autoLiquidityReceiver,
         address _marketingFeeReceiver
-    ) external authorized {
+    ) external onlyOwner {
         autoLiquidityReceiver = _autoLiquidityReceiver;
         marketingFeeReceiver = _marketingFeeReceiver;
     }
 
     function setSwapBackSettings(bool _enabled, uint256 _amount)
         external
-        authorized
+        onlyOwner
     {
         swapEnabled = _enabled;
         swapThreshold = _amount;
@@ -1464,7 +1128,7 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
 
     function setTargetLiquidity(uint256 _target, uint256 _denominator)
         external
-        authorized
+        onlyOwner
     {
         targetLiquidity = _target;
         targetLiquidityDenominator = _denominator;
@@ -1473,11 +1137,11 @@ contract BuybackBabyToken is IERC20Extended, Auth, BaseToken {
     function setDistributionCriteria(
         uint256 _minPeriod,
         uint256 _minDistribution
-    ) external authorized {
+    ) external onlyOwner {
         distributor.setDistributionCriteria(_minPeriod, _minDistribution);
     }
 
-    function setDistributorSettings(uint256 gas) external authorized {
+    function setDistributorSettings(uint256 gas) external onlyOwner {
         require(gas < 750000, "Gas must be lower than 750000");
         distributorGas = gas;
     }

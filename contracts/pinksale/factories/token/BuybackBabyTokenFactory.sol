@@ -4,13 +4,13 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "./TokenFactoryBase.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-// import "../../interfaces/ILiquidityGeneratorToken.sol";
-import "../../tokens/LiquidityGeneratorToken.sol";
+// import "../../interfaces/IBuybackBabyToken.sol";
+import "../../tokens/BuybackBabyToken.sol";
 
 
-contract LiquidityGeneratorTokenFactory is TokenFactoryBase {
+contract BuybackBabyTokenFactory is TokenFactoryBase {
   using Address for address payable;
-  LiquidityGeneratorToken[] public liquidityTokens;
+  BuybackBabyToken[] public buybackBabyToken;
 
   constructor(address factoryManager_, address implementation_) TokenFactoryBase(factoryManager_, implementation_) {}
 
@@ -18,32 +18,28 @@ contract LiquidityGeneratorTokenFactory is TokenFactoryBase {
     string memory name,
     string memory symbol,
     uint256 totalSupply,
+    address rewardToken,
     address router,
-    address charity,
-    uint16 taxFeeBps, 
-    uint16 liquidityFeeBps,
-    uint16 charityBps
+    uint256[5] memory feeVals
   ) external payable enoughFee nonReentrant returns (address token) {
     refundExcessiveFee();
     payable(feeTo).sendValue(flatFee);
     token = Clones.clone(implementation);
-    LiquidityGeneratorToken( payable(token) ).initialize(
+    BuybackBabyToken(payable(token)).initialize(
       msg.sender,
       name,
       symbol,
       totalSupply,
+      rewardToken,
       router,
-      charity,
-      taxFeeBps,
-      liquidityFeeBps,
-      charityBps
+      feeVals
     );
-    liquidityTokens.push(LiquidityGeneratorToken( payable(token) ));
+    buybackBabyToken.push(BuybackBabyToken(payable(token)));
     assignTokenToOwner(msg.sender, token, 1);
     emit TokenCreated(msg.sender, token, 1);
   }
 
-  function getTokens() public view returns(LiquidityGeneratorToken[] memory) {
-    return liquidityTokens;
+  function getTokens() public view returns(BuybackBabyToken[] memory) {
+    return buybackBabyToken;
   }
 }

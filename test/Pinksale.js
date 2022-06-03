@@ -10,12 +10,14 @@ const ROUTER_ADDRESS = ethers.utils.getAddress(
 )
 
 describe('Pinksale Project=======', function () {
-  let kageStaking
+  let rewardToken
   let factoryManager
   let standardToken
   let liquidityToken
+  let buybackToken
   let standardTokenFactory
   let liquidityTokenFactory
+  let buybackTokenFactory
   let owner
   let addr1
   let addr2
@@ -28,6 +30,12 @@ describe('Pinksale Project=======', function () {
 
     initialSupply = ethers.utils.parseUnits('1000000000', "gwei");
 
+    // make reward token
+    const rewardContract = await ethers.getContractFactory('Spozz')
+    rewardToken = await rewardContract.deploy()
+    await rewardToken.deployed()
+
+    // make tokenfactory manager
     const tokenFactoryManager = await ethers.getContractFactory('TokenFactoryManager')
     factoryManager = await tokenFactoryManager.deploy()
     await factoryManager.deployed()
@@ -40,6 +48,10 @@ describe('Pinksale Project=======', function () {
     liquidityToken = await liquidityTokenContract.deploy();
     await liquidityToken.deployed()
 
+    const buybackTokenContract = await ethers.getContractFactory('BuybackBabyToken');
+    buybackToken = await buybackTokenContract.deploy();
+    await buybackToken.deployed()
+
     const standardTokenFactoryContract = await ethers.getContractFactory('StandardTokenFactory');
     standardTokenFactory = await standardTokenFactoryContract.deploy(factoryManager.address, standardToken.address);
     await standardTokenFactory.deployed()
@@ -47,6 +59,10 @@ describe('Pinksale Project=======', function () {
     const liquidityTokenFactoryContract = await ethers.getContractFactory('LiquidityGeneratorTokenFactory')
     liquidityTokenFactory = await liquidityTokenFactoryContract.deploy(factoryManager.address, liquidityToken.address);
     await liquidityTokenFactory.deployed()
+
+    const buybackTokenFactoryContract = await ethers.getContractFactory('BuybackBabyTokenFactory');
+    buybackTokenFactory = await buybackTokenFactoryContract.deploy(factoryManager.address, buybackToken.address);
+    await buybackTokenFactory.deployed();
 
   });
 
@@ -79,12 +95,38 @@ describe('Pinksale Project=======', function () {
     it('create new liquiditygenerator token', async () => {
       console.log("router address : ", ROUTER_ADDRESS);
       await factoryManager.addTokenFactory(liquidityTokenFactory.address);
-      const tokenAddress1 = await liquidityTokenFactory.create("DEMO", "DEMO", 4500000000, ROUTER_ADDRESS, owner.address, 100, 300, 100, {value: ethers.utils.parseEther('0.1'),});
-      const tokenAddress2 = await liquidityTokenFactory.create("DEMO", "DEMO", 3000000000, ROUTER_ADDRESS, owner.address, 100, 300, 100, {value: ethers.utils.parseEther('0.1'),});
+      const tokenAddress1 = await liquidityTokenFactory.create("LTOKEN1", "DEMO", 4500000000, ROUTER_ADDRESS, owner.address, 100, 300, 100, {value: ethers.utils.parseEther('0.1'),});
+      const tokenAddress2 = await liquidityTokenFactory.create("LTOKEN2", "DEMO", 3000000000, ROUTER_ADDRESS, owner.address, 100, 300, 100, {value: ethers.utils.parseEther('0.1'),});
+
+      let tokens = await liquidityTokenFactory.getTokens();
+      let firstToken = await tokens[0];
+      let newTokenContract = await ethers.getContractAt("LiquidityGeneratorToken", firstToken);
+      let tokenName = await newTokenContract.name();
+      console.log("liquidity token name1: ", tokenName);
     });
+
+    it('create new buybackbaby token', async () => {
+      await factoryManager.addTokenFactory(buybackTokenFactory.address);
+      const fees = [];
+      fees[0] = 300;
+      fees[1] = 600;
+      fees[2] = 300;
+      fees[3] = 300;
+      fees[4] = 10000;
+      // name, symbol, totalsupply, reward token,  router address, feesetting: // liquidityFee    // buybackFee    // reflectionFee   // marketingFee  // feeDenominator
+      const tokenAddress1 = await buybackTokenFactory.create("BuyBackToken1", "BBT1", 4500000000, rewardToken.address, ROUTER_ADDRESS, fees, {value: ethers.utils.parseEther('0.1'),});
+      const tokenAddress2 = await buybackTokenFactory.create("BuyBackToken2", "BBT2", 3000000000, rewardToken.address, ROUTER_ADDRESS, fees, {value: ethers.utils.parseEther('0.1'),});
+
+      let tokens = await buybackTokenFactory.getTokens();
+      let firstToken = await tokens[0];
+      let newTokenContract = await ethers.getContractAt("BuybackBabyToken", firstToken);
+      let tokenName = await newTokenContract.name();
+      console.log("buybackbabytoken name1: ", tokenName);
+    });
+
   });
 
-  describe('staking contract setup', async () => {
+  describe('Pinksale Presale Contract Test', async () => {
     it('Test inital month idx ', async function () {
       // const initialMonthIdx = await kageStaking.curMonthIdx();
       // console.log('Tarzan: staking address===>', kageStaking.address);

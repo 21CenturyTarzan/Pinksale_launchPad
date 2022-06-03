@@ -1,9 +1,12 @@
 # This is hardhat project for Pinksale LaunchPad Contracts
 
-#npx hardhat compile
+# npx hardhat compile
  -- this will compile all smart contract file.
-#npx hardhat test
+# npx hardhat test
  -- this will run test script.
+
+# npx hardhat clean
+ -- this will clear artifacts directory
 
 # deploy
     npm run bsctest:deploy
@@ -53,12 +56,12 @@ my configuration
 
 it will compile smart contract files first then show yellow messages like below
 ```diff
-- text in red
-+ text in green
 ! text in You're running a network fork starting from the latest block.
 ! Performance may degrade due to fetching data from the network with each run.
 ! If connecting to an archival node (e.g. Alchemy), we strongly recommend setting
 ! blockNumber to a fixed value to increase performance with a local cache.
+- text in red
++ text in green
 # text in gray
 @@ text in purple (and bold)@@
 ```
