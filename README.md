@@ -55,7 +55,10 @@ it will compile smart contract files first then show yellow messages like below
 ```diff
 - text in red
 + text in green
-! text in orange
+! text in You're running a network fork starting from the latest block.
+! Performance may degrade due to fetching data from the network with each run.
+! If connecting to an archival node (e.g. Alchemy), we strongly recommend setting
+! blockNumber to a fixed value to increase performance with a local cache.
 # text in gray
 @@ text in purple (and bold)@@
 ```
