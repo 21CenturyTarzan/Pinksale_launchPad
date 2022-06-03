@@ -34,6 +34,17 @@ refer this url
 https://hardhat.org/hardhat-network/guides/mainnet-forking
 
 - set hardhat forking configuration with ehtereum-mainnet alchemy key
+my configuration
+    hardhat: {
+      forking: {
+        // enabled: process.env.FORKING === "true",
+        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY2}`,
+      },
+      // live: false,
+      // saveDeployments: true,
+      // tags: ["test", "local"],
+    },
+
 - open a terminal and type
     npx hardhat node
     (then: npx hardhat test)
@@ -41,4 +52,6 @@ https://hardhat.org/hardhat-network/guides/mainnet-forking
     npx hardhat test
 
 it will compile smart contract files first then show yellow messages like below
-image.png
+```html
+   <span style="color: green"> Some green text </span>
+```
